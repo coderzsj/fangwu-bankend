@@ -1,5 +1,6 @@
 package com.yechrom.cloud.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yechrom.cloud.dto.mapper.BuyHouseMapper;
 import com.yechrom.cloud.dto.mapper.SellHouseMapper;
@@ -63,17 +64,20 @@ public class DataService {
         Map<String, Object> columnMap = new HashMap<>();
         columnMap.put("is_delete",0);
         columnMap.put("sell_statue",1);
+        columnMap.put("sell_order",order);
         List<SellHouse> sellHouses = sellHouseMapper.selectByMap(columnMap);
 
         if (sellHouses.size() > 0) {
             int pick = sellHouses.get(0).getSellPick();
             pick++;
-            SellHouse house = new SellHouse();
-            house.setSellPick(pick);
-           UpdateWrapper<SellHouse>  updateWrapper = new UpdateWrapper<>();;
-            updateWrapper.set("is_delete", 0);
-            updateWrapper.set("sell_order", order);
-            int result = sellHouseMapper.update(house, updateWrapper);
+            SellHouse sellHouse = new SellHouse();
+            sellHouse.setSellPick(pick);
+            QueryWrapper<SellHouse> queryWrapper = new QueryWrapper<>();
+            SellHouse sellHouse1 = new SellHouse();
+            sellHouse1.setIsDelete(0);
+            sellHouse1.setSellOrder(order);
+            queryWrapper.setEntity(sellHouse1);
+            int result = sellHouseMapper.update(sellHouse, queryWrapper);
             ResponseBaseVo response = ResponseVoUtil.getResponse(result, "成功", "数据采集失败");
             return response;
         }

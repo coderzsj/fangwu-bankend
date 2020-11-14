@@ -98,7 +98,7 @@ public class HouseService {
 
             Map<String, Object> columnMap1 = new HashMap<>();
             columnMap1.put("is_delete", 0);
-            columnMap1.put("uuid", buyHouse.getBuyUuid());
+            columnMap1.put("buy_house", buyHouse.getBuyUuid());
 
             List<User> users = userMapper.selectByMap(columnMap1);
             vo.setBuy_name(users.get(0).getName());
@@ -165,7 +165,7 @@ public class HouseService {
     public ResponseBaseVo showAllSellHouse(ShowAllSellHouseVo requestVo){
         //查数据库
         Map<String,Object> columnMap = new HashMap<>();
-        columnMap.put("sell_statue",2);
+        columnMap.put("sell_statue",1);
         columnMap.put("is_delete",0);
         List<SellHouse> sellHouses = sellHouseMapper.selectByMap(columnMap);
 
@@ -187,7 +187,7 @@ public class HouseService {
 
             Map<String, Object> columnMap1 = new HashMap<>();
             columnMap.put("is_delete", 0);
-            columnMap.put("uuid", sellHouse.getSellUuid());
+            columnMap.put("sell_order", sellHouse.getSellUuid());
             List<User> users = userMapper.selectByMap(columnMap1);
             vo.setSell_name(users.get(0).getName());
 

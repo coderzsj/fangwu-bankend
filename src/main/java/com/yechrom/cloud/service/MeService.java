@@ -43,7 +43,7 @@ public class MeService {
         //查数据库
         Map<String, Object> columnMap = new HashMap<>();
         columnMap.put("is_delete", 0);
-        columnMap.put("uuid", requestVo.getUuid());
+        columnMap.put("buy_order", requestVo.getUuid());
         List<BuyHouse> buyHouses = buyHouseMapper.selectByMap(columnMap);
         List<ShowAllHouseBackVo> allList = new ArrayList<>();
 
@@ -59,7 +59,7 @@ public class MeService {
             vo.setBuy_price(buyHouse.getBuyPrice());
             vo.setBuy_pick(buyHouse.getBuyPick());
             Map<String, Object> columnMap1 = new HashMap<>();
-            columnMap1.put("uuid",buyHouse.getSellUuid());
+            columnMap1.put("buy_house",buyHouse.getSellUuid());
             columnMap1.put("is_delete",0);
             List<User> users = userMapper.selectByMap(columnMap1);
             if (users.size() == 0){
@@ -105,7 +105,7 @@ public class MeService {
     public ResponseBaseVo showAllSellerHouse(ShowMeAllOrderVo requestVo){
         //查数据库
         Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("uuid",requestVo.getUuid());
+        columnMap.put("sell_order",requestVo.getUuid());
         columnMap.put("is_delete",0);
 
         List<SellHouse> sellHouses = sellHouseMapper.selectByMap(columnMap);

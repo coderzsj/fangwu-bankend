@@ -128,7 +128,6 @@ public class UserService {
         return 0;
     }
 
-
     /**
      * 查询所有的用户
      *
@@ -215,7 +214,6 @@ public class UserService {
      * @throws Exception
      */
     public int addUser(AddUserVo userVo) throws Exception {
-
         User userPo = new User();
         userPo.setIsDelete(0);
         userPo.setName(userVo.getName());
@@ -224,9 +222,6 @@ public class UserService {
         userPo.setRoles(userVo.getRoles());
         userPo.setUuid(UUIDUtil.getUserUUID());
         userPo.setAvater("https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
-
         return user.insert(userPo);
     }
-
-
 }

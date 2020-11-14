@@ -77,13 +77,4 @@ public class Swagger2Config {
         result.add(new SecurityReference("Authorization", authorizationScopes));
         return result;
     }
-
-    @Bean
-    public void m(){
-        GlobalConfig globalConfig = new GlobalConfig();
-        globalConfig.setOutputDir(System.getProperty("E:/fangwu/后端/cloud/src") + "/src/main/java");
-        globalConfig.setAuthor("jobob");
-        globalConfig.setOpen(false);
-    }
-
 }

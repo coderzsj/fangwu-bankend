@@ -47,11 +47,8 @@ public class DataController {
     @GetMapping("/bigdata/picksell")
     @ResponseBody
     public ResponseBaseVo pickSell(@RequestParam(value = "order")String order){
-
         log.info("调用了接口 点击了某在租订单, 传入报文为: {} " , order );
-
         ResponseBaseVo response = dataService.pickSell(order);
-
         return response;
     }
 
