@@ -17,7 +17,7 @@ public class Swagger2Conf {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.swagger2test"))
+                .apis(RequestHandlerSelectors.basePackage("com.yechrom.cloud.controller.AfterOrderController"))
                 .paths(PathSelectors.any())
                 .build();
     }
