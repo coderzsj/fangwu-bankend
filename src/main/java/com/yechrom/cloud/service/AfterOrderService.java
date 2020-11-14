@@ -1,12 +1,10 @@
 package com.yechrom.cloud.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.yechrom.cloud.dto.mapper.QuestionOrderMapper;
 import com.yechrom.cloud.dto.pojo.QuestionOrder;
-import com.yechrom.cloud.dto.pojo.QuestionOrderExample;
 import com.yechrom.cloud.dto.vo.AfterOrderAddVo;
 import com.yechrom.cloud.dto.vo.ShowAfterOrderBackVo;
 import com.yechrom.cloud.dto.vo.ShowAllSellHouseVo;
@@ -37,13 +35,10 @@ public class AfterOrderService {
      * @return
      */
     public ResponseBaseVo addAfterOrder(AfterOrderAddVo request) throws Exception {
-
         if (!StringUtils.isNotBlank(request.getAddress()) || !StringUtils.isNotBlank(request.getIntroduction()) || !StringUtils.isNotBlank(request.getPhone()) || !StringUtils.isNotBlank(request.getSeller())) {
             throw new ParamIsNullException("参数为空");
         }
-
         QuestionOrder quest = new QuestionOrder();
-
         quest.setQuesOrder(UUIDUtil.getOrderID(UUIDUtil.Order.QUESTION));
         quest.setQuesTime(new Date());
         quest.setQuesStatue(1);
@@ -52,8 +47,7 @@ public class AfterOrderService {
         quest.setQuesSeller(request.getSeller());
         quest.setIsDelete(0);
         quest.setFlag1(request.getPhone());
-
-        int result = questionOrderMapper.insertSelective(quest);
+        int result = questionOrderMapper.insert(quest);
         return ResponseVoUtil.getResponse(result, "售后单提交成功", "售后单提交失败");
     }
 
@@ -68,31 +62,23 @@ public class AfterOrderService {
         if (request.getLimit() == 0) {
             throw new ParamIsNullException("参数错误");
         }
-
         //查数据库
-        QuestionOrderExample example = new QuestionOrderExample();
-        int                  start   = (request.getPage() - 1) * request.getLimit();
-        example.setStart(start);
-        example.setCount(request.getLimit());
-        QuestionOrderExample.Criteria criteria = example.createCriteria();
-        criteria.andIsDeleteEqualTo(0);
-
-        List<QuestionOrder> orders = questionOrderMapper.selectByExample(example);
-
+        QuestionOrder questionOrder = new QuestionOrder();
+        questionOrder.setIsDelete(0);
+        QueryWrapper<QuestionOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.setEntity(questionOrder);
+        List<QuestionOrder> orders = questionOrderMapper.selectList(queryWrapper);
         List<ShowAfterOrderBackVo> allList = new ArrayList<ShowAfterOrderBackVo>();
-
         //遍历获取vo
         for (QuestionOrder order :
                 orders) {
             ShowAfterOrderBackVo vo = new ShowAfterOrderBackVo();
-
             vo.setAfter_order(order.getQuesOrder());
             vo.setAfter_statue(order.getQuesStatue());
             vo.setAfter_introduction(order.getQuesIntruduction());
             vo.setAfter_phone(order.getFlag1());
             vo.setAfter_time(order.getQuesTime());
             vo.setAfter_seller(order.getQuesSeller());
-
             allList.add(vo);
         }
 
@@ -102,7 +88,6 @@ public class AfterOrderService {
         data.put("total", allList.size());
         response.setData(data);
         response.setErrorcode(1);
-
         return response;
     }
 
@@ -113,11 +98,14 @@ public class AfterOrderService {
      * @throws Exception
      */
     public ResponseBaseVo changeAfterOrder(String order, int statue) throws Exception {
-
         QuestionOrder questionOrder = new QuestionOrder();
-        Wrapper<QuestionOrder> updateWrapper = new UpdateWrapper<>();
-        questionOrderMapper.update(questionOrder, updateWrapper);
-        return ResponseVoUtil.getResponse(result, "操作成功", "操作失败");
+        questionOrder.setQuesStatue(statue);
+        UpdateWrapper<QuestionOrder> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("is_delete",0);
+        updateWrapper.set("ques_order",order);
+        int update = questionOrderMapper.update(questionOrder, updateWrapper);
+        return ResponseVoUtil.getResponse(update, "操作成功", "操作失败");
     }
+
 
 }

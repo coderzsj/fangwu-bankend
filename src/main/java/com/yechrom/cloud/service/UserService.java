@@ -1,10 +1,11 @@
 package com.yechrom.cloud.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yechrom.cloud.dto.mapper.UserMapper;
+import com.yechrom.cloud.dto.pojo.BuyHouse;
+import com.yechrom.cloud.dto.pojo.SellHouse;
 import com.yechrom.cloud.dto.pojo.User;
-import com.yechrom.cloud.dto.pojo.UserExample;
-
 import com.yechrom.cloud.dto.vo.AddUserVo;
 import com.yechrom.cloud.dto.vo.LoginVo;
 import com.yechrom.cloud.dto.vo.ShowUserVo;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -33,67 +36,64 @@ public class UserService {
     @Autowired
     private RedisUtil redisUtil;
 
-    public List<User> getUsers(){
-        UserExample example = new UserExample();
-        UserExample.Criteria criteria = example.createCriteria();
-        criteria.andUuidEqualTo("d84162ee1ce64d2fb361a4012a6d7d0c");
-//        user.selectByExample(example);
-        return user.selectByExample(example);
+    public List<User> getUsers() {
+        Map<String, Object> columnMap2 = new HashMap<>();
+        columnMap2.put("uuid", "d84162ee1ce64d2fb361a4012a6d7d0c");
+        return user.selectByMap(columnMap2);
 //        return user.selectAll();
     }
 
     /**
-     *  登录接口调用的业务类
+     * 登录接口调用的业务类
+     *
      * @param loginVo
      * @return
      * @throws Exception
      */
     public String login(LoginVo loginVo) throws Exception {
 
-        if (StringUtils.isAllBlank(loginVo.getUsername()) || StringUtils.isAllBlank(loginVo.getPassword())){
+        if (StringUtils.isAllBlank(loginVo.getUsername()) || StringUtils.isAllBlank(loginVo.getPassword())) {
             throw new UsernameOrPasswordIsNullException("用户名密码为空");
         }
-
-        UserExample example = new UserExample();
-        UserExample.Criteria criteria = example.createCriteria();
-        criteria.andUsernameEqualTo(loginVo.getUsername());
-        criteria.andPasswordEqualTo(loginVo.getPassword());
-        criteria.andIsDeleteEqualTo(0);
-
-        List<User> result = user.selectByExample(example);
+        Map<String, Object> columnMap1 = new HashMap<>();
+        columnMap1.put("username", loginVo.getUsername());
+        columnMap1.put("password", loginVo.getPassword());
+        columnMap1.put("is_delete", 0);
+        List<User> result = user.selectByMap(columnMap1);
 
         //token
         String token = "";
 
         //用户名或密码错误
-        if (result.size() == 0){
+        if (result.size() == 0) {
             return token;
         }
         //生成token 暂定 待优化
         token = UUIDUtil.getUserUUID();
         //信息存入redis
-        JSONObject json = new JSONObject();
-        String roles[] = new String[1];
-        if (result.get(0).getRoles() == 1){
+        JSONObject json    = new JSONObject();
+        String     roles[] = new String[1];
+        if (result.get(0).getRoles() == 1) {
             roles[0] = "user";
-        }else if(result.get(0).getRoles() == 2){
+        } else if (result.get(0).getRoles() == 2) {
             roles[0] = "seller";
-        }else if(result.get(0).getRoles() == 0){
+        } else if (result.get(0).getRoles() == 0) {
             roles[0] = "admin";
-        }else if(result.get(0).getRoles() == -1){
+        } else if (result.get(0).getRoles() == -1) {
             roles[0] = "yechrom";
         }
-        json.put("roles" ,roles);
-        json.put("name" , result.get(0).getName());
-        json.put("introduction" , result.get(0).getIntroduction());
-        json.put("avatar" , result.get(0).getAvater());
-        json.put("uuid" , result.get(0).getUuid());
-        redisUtil.setEx(token , json.toJSONString() , 1 , TimeUnit.DAYS);
+        json.put("roles", roles);
+        json.put("name", result.get(0).getName());
+        json.put("introduction", result.get(0).getIntroduction());
+        json.put("avatar", result.get(0).getAvater());
+        json.put("uuid", result.get(0).getUuid());
+        redisUtil.setEx(token, json.toJSONString(), 1, TimeUnit.DAYS);
         return token;
     }
 
     /**
-     *  从redis中获取用户信息
+     * 从redis中获取用户信息
+     *
      * @param token
      * @return
      */
@@ -101,26 +101,27 @@ public class UserService {
         String userInfo = "";
         userInfo = redisUtil.get(token);
 
-        if (userInfo.length() == 0){
+        if (userInfo.length() == 0) {
             throw new UsernameOrPasswordIsNullException("reids中不存在info~");
         }
         return JSONObject.parseObject(userInfo);
     }
 
     /**
-     *  登出用户
+     * 登出用户
+     *
      * @param token
      * @return
      * @throws Exception
      */
     public int logout(String token) throws Exception {
-        if( StringUtils.isEmpty(token)){
+        if (StringUtils.isEmpty(token)) {
             throw new TokenNullException("token不存在~");
         }
         //判断是否存在token
         Boolean hasKey = redisUtil.hasKey(token);
         //如果存在 删除
-        if(hasKey){
+        if (hasKey) {
             redisUtil.delete(token);
             return 1;
         }
@@ -133,12 +134,11 @@ public class UserService {
      *
      * @return
      */
-    public List<ShowUserVo> show(){
-        UserExample example = new UserExample();
-        UserExample.Criteria criteria = example.createCriteria();
-        criteria.andIsDeleteEqualTo(0);
-        List<User> users = user.selectByExample(example);
+    public List<ShowUserVo> show() {
 
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("is_delete", 0);
+        List<User> users = user.selectByMap(columnMap);
         List<ShowUserVo> result = new ArrayList<ShowUserVo>();
         //遍历 获取你想要的
         for (User user :
@@ -152,16 +152,16 @@ public class UserService {
             vo.setAvatar(user.getAvater());
 
             int role = user.getRoles();
-            if (role == 1){
+            if (role == 1) {
                 String[] roleArray = {"user"};
                 vo.setRoles(roleArray);
-            }else if (role == 2){
+            } else if (role == 2) {
                 String[] roleArray = {"seller"};
                 vo.setRoles(roleArray);
-            }else if (role == 0){
+            } else if (role == 0) {
                 String[] roleArray = {"admin"};
                 vo.setRoles(roleArray);
-            }else {
+            } else {
                 String[] roleArray = {"yechrom"};
                 vo.setRoles(roleArray);
             }
@@ -172,48 +172,45 @@ public class UserService {
 
     /**
      * 更新用户信息
+     *
      * @return
      */
     public int updateUser(UpdateUserVo userVo) throws Exception {
 
-        if (!StringUtils.isNotBlank(userVo.getPassword()) || !StringUtils.isNotBlank(userVo.getName())){
+        if (!StringUtils.isNotBlank(userVo.getPassword()) || !StringUtils.isNotBlank(userVo.getName())) {
             throw new ParamIsNullException("姓名或密码不能为空~");
         }
-
-        UserExample example = new UserExample();
-        UserExample.Criteria criteria = example.createCriteria();
-        criteria.andIsDeleteEqualTo(0);
-        criteria.andUuidEqualTo(userVo.getUuid());
-
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();;
+        updateWrapper.set("is_delete", 0);
+        updateWrapper.set("uuid", userVo.getUuid());
         User userPo = new User();
         userPo.setName(userVo.getName());
         userPo.setIntroduction(userVo.getIntroduction());
         userPo.setPassword(userVo.getPassword());
 
-        return user.updateByExampleSelective(userPo , example);
+        return user.update(userPo, updateWrapper);
     }
 
     /**
      * 删除用户
+     *
      * @param uuid
      * @return
      * @throws Exception
      */
     public int deleteUser(String uuid) throws Exception {
-        UserExample example = new UserExample();
-        UserExample.Criteria criteria = example.createCriteria();
-        criteria.andIsDeleteEqualTo(0);
-        criteria.andUuidEqualTo(uuid);
-
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("is_delete", 0);
+        updateWrapper.set("uuid", uuid);
         User userPo = new User();
         userPo.setIsDelete(1);
-
-        return user.updateByExampleSelective(userPo , example);
+        return user.update(userPo, updateWrapper);
     }
 
     /**
-     *  添加用户
-     * @param  userVo
+     * 添加用户
+     *
+     * @param userVo
      * @return
      * @throws Exception
      */
@@ -228,7 +225,7 @@ public class UserService {
         userPo.setUuid(UUIDUtil.getUserUUID());
         userPo.setAvater("https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
 
-        return user.insertSelective(userPo);
+        return user.insert(userPo);
     }
 
 

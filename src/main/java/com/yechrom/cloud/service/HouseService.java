@@ -1,6 +1,7 @@
 package com.yechrom.cloud.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.yechrom.cloud.dto.mapper.BuyHouseMapper;
 import com.yechrom.cloud.dto.mapper.SellHouseMapper;
 import com.yechrom.cloud.dto.mapper.UserMapper;
@@ -13,9 +14,7 @@ import com.yechrom.cloud.util.UUIDUtil;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class HouseService {
@@ -45,7 +44,7 @@ public class HouseService {
         house.setSellUuid(requestVo.getSell_uuid());
         house.setIsDelete(0);
         house.setSellPick(0);
-        return sellHouseMapper.insertSelective(house);
+        return sellHouseMapper.insert(house);
     }
 
 
@@ -66,7 +65,7 @@ public class HouseService {
         house.setIsDelete(0);
         house.setBuyPick(0);
 
-        return buyHouseMapper.insertSelective(house);
+        return buyHouseMapper.insert(house);
     }
 
 
@@ -76,18 +75,11 @@ public class HouseService {
      * @return
      */
     public ResponseBaseVo showAllBuyHouse(ShowAllSellHouseVo requestVo){
-
         //查数据库
-        BuyHouseExample example = new BuyHouseExample();
-        int start = (requestVo.getPage() -1) * requestVo.getLimit();
-        example.setStart(start);
-        example.setCount(requestVo.getLimit());
-        BuyHouseExample.Criteria criteria = example.createCriteria();
-        criteria.andBuyStatueEqualTo(1);
-        criteria.andIsDeleteEqualTo(0);
-
-        List<BuyHouse> buyHouses = buyHouseMapper.selectByExample(example);
-
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("is_delete", 0);
+        columnMap.put("buy_statue", 1);
+        List<BuyHouse> buyHouses = buyHouseMapper.selectByMap(columnMap);
         List<ShowAllHouseBackVo> allList = new ArrayList<ShowAllHouseBackVo>();
 
         //遍历获取vo
@@ -104,11 +96,11 @@ public class HouseService {
             vo.setBuy_price(buyHouse.getBuyPrice());
             vo.setBuy_pick(buyHouse.getBuyPick());
 
-            UserExample exampleUser = new UserExample();
-            UserExample.Criteria criteriaUser = exampleUser.createCriteria();
-            criteriaUser.andUuidEqualTo(buyHouse.getBuyUuid());
-            criteriaUser.andIsDeleteEqualTo(0);
-            List<User> users = userMapper.selectByExample(exampleUser);
+            Map<String, Object> columnMap1 = new HashMap<>();
+            columnMap1.put("is_delete", 0);
+            columnMap1.put("uuid", buyHouse.getBuyUuid());
+
+            List<User> users = userMapper.selectByMap(columnMap1);
             vo.setBuy_name(users.get(0).getName());
 
             allList.add(vo);
@@ -153,17 +145,13 @@ public class HouseService {
      * @return
      */
     public ResponseBaseVo BuyHouseHaveASeller(String sellorder , String sellid){
-
-        BuyHouseExample example = new BuyHouseExample();
-        BuyHouseExample.Criteria criteria = example.createCriteria();
-        criteria.andIsDeleteEqualTo(0);
-        criteria.andBuyOrderEqualTo(sellorder);
-
+        UpdateWrapper<BuyHouse> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("is_delete",0);
+        updateWrapper.set("ques_order",sellorder);
         BuyHouse house = new BuyHouse();
         house.setBuyStatue(2);
         house.setSellUuid(sellid);
-
-        int result = buyHouseMapper.updateByExampleSelective(house ,example);
+        int result = buyHouseMapper.update(house ,updateWrapper);
 
         return getResponse(result , "操作成功" , "操作失败");
     }
@@ -175,17 +163,11 @@ public class HouseService {
      * @return
      */
     public ResponseBaseVo showAllSellHouse(ShowAllSellHouseVo requestVo){
-
         //查数据库
-        SellHouseExample example = new SellHouseExample();
-        int start = (requestVo.getPage() -1) * requestVo.getLimit();
-        example.setStart(start);
-        example.setCount(requestVo.getLimit());
-        SellHouseExample.Criteria criteria = example.createCriteria();
-        criteria.andSellStatueEqualTo(1);
-        criteria.andIsDeleteEqualTo(0);
-
-        List<SellHouse> sellHouses = sellHouseMapper.selectByExample(example);
+        Map<String,Object> columnMap = new HashMap<>();
+        columnMap.put("sell_statue",2);
+        columnMap.put("is_delete",0);
+        List<SellHouse> sellHouses = sellHouseMapper.selectByMap(columnMap);
 
         List<ShowAllHouseBackSellVo> allList = new ArrayList<ShowAllHouseBackSellVo>();
 
@@ -203,11 +185,10 @@ public class HouseService {
             vo.setSell_price(sellHouse.getSellPrice());
             vo.setSell_pick(sellHouse.getSellPick());
 
-            UserExample exampleUser = new UserExample();
-            UserExample.Criteria criteriaUser = exampleUser.createCriteria();
-            criteriaUser.andUuidEqualTo(sellHouse.getSellUuid());
-            criteriaUser.andIsDeleteEqualTo(0);
-            List<User> users = userMapper.selectByExample(exampleUser);
+            Map<String, Object> columnMap1 = new HashMap<>();
+            columnMap.put("is_delete", 0);
+            columnMap.put("uuid", sellHouse.getSellUuid());
+            List<User> users = userMapper.selectByMap(columnMap1);
             vo.setSell_name(users.get(0).getName());
 
             allList.add(vo);
@@ -230,19 +211,13 @@ public class HouseService {
      * @return
      */
     public ResponseBaseVo BuyHouseHaveAUser(String buyorder , String buyid){
-
-        SellHouseExample example = new SellHouseExample();
-        SellHouseExample.Criteria criteria = example.createCriteria();
-
-        criteria.andIsDeleteEqualTo(0);
-        criteria.andSellOrderEqualTo(buyorder);
-
         SellHouse house = new SellHouse();
         house.setSellStatue(2);
         house.setBuyUser(buyid);
-
-        int result = sellHouseMapper.updateByExampleSelective(house ,example);
-
+        UpdateWrapper<SellHouse> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("is_delete",0);
+        updateWrapper.set("sell_order",buyorder);
+        int result = sellHouseMapper.update(house ,updateWrapper);
         return getResponse(result , "操作成功" , "操作失败");
     }
 
