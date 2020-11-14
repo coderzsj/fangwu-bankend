@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @CheckToken
 @Api(tags = "职工税务代征回盘处理")
 public class AfterOrderController {
-
     @Autowired
     AfterOrderService afterOrderService;
 
@@ -27,14 +26,10 @@ public class AfterOrderController {
     @PostMapping("/afterorder/put")
     @ResponseBody
     public ResponseBaseVo addAfterOrder(@RequestBody AfterOrderAddVo requestVo) throws Exception {
-
         log.info("调用了添加售后单接口 , 传入报文为: {}" , requestVo);
-
         ResponseBaseVo response = afterOrderService.addAfterOrder(requestVo);
-
         return response;
     }
-
 
     /**
      * 查看所有问题单
@@ -44,14 +39,10 @@ public class AfterOrderController {
     @PostMapping("/afterorder/show")
     @ResponseBody
     public ResponseBaseVo showAfterOrder(@RequestBody ShowAllSellHouseVo requestVo) throws Exception {
-
         log.info("调用了查看所有问题单接口 , 传入报文为: {}" , requestVo);
-
         ResponseBaseVo response = afterOrderService.showAfterOrder(requestVo);
-
         return response;
     }
-
 
     /**
      * 修改问题单状态
@@ -61,11 +52,8 @@ public class AfterOrderController {
     @GetMapping("/afterorder/changed")
     @ResponseBody
     public ResponseBaseVo changeAfterOrder(@RequestParam(value = "order") String order , @RequestParam(value = "statue") int statue ) throws Exception {
-
         log.info("调用了修改问题单状态的接口 , 传入报文为: {} , {}" , order , statue);
-
         ResponseBaseVo response = afterOrderService.changeAfterOrder(order , statue);
-
         return response;
     }
 }

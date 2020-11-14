@@ -24,8 +24,8 @@ public class QuartzConfig {
      */
     @Bean
     public Trigger errorInterfaceTrigger() {
-//        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/1 * * * ?");
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0 12 25 12 ? *");
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/1 * * * ?");
+//        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0 12 25 12 ? *");
 
         return TriggerBuilder.newTrigger().forJob(getDataJob()).withIdentity("getDataTask")
                 .withSchedule(scheduleBuilder).build();

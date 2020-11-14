@@ -1,22 +1,17 @@
 package com.yechrom.cloud.controller;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.yechrom.cloud.dto.pojo.User;
 import com.yechrom.cloud.service.UserService;
 import com.yechrom.cloud.util.RedisUtil;
-import com.yechrom.cloud.webmagic.DemoFirst;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import us.codecraft.webmagic.Spider;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 
 @RestController
@@ -31,15 +26,8 @@ public class FirstController {
 
     @RequestMapping("/first")
     public String test(){
-//        Spider.create(new DemoFirst()).addUrl("https://github.com/code4craft").thread(5).run();
         List<User> users = user.getUsers();
-
-        for (User user :
-                users) {
-
-            System.out.println(user.toString());
-        }
-
+        for (User user : users) System.out.println(user.toString());
         return "ok";
     }
 
@@ -57,7 +45,6 @@ public class FirstController {
 
     @RequestMapping("/redistest")
     public String test2(){
-
         redis.set("123123123" , "123213123");
         log.info(redis.get("123123123"));
         return null;
