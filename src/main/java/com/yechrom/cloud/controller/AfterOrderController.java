@@ -5,7 +5,6 @@ import com.yechrom.cloud.dto.vo.ShowAllSellHouseVo;
 import com.yechrom.cloud.dto.vo.response.ResponseBaseVo;
 import com.yechrom.cloud.interceptor.CheckToken;
 import com.yechrom.cloud.service.AfterOrderService;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Slf4j
 @CheckToken
-@Api(tags = "职工税务代征回盘处理")
 public class AfterOrderController {
     @Autowired
     AfterOrderService afterOrderService;

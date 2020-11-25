@@ -61,9 +61,9 @@
 //    //初始化配置
 //    static{
 //        if (testOrProduct) {
-//        	logger.info("发送请求~测试环境~代理为proxy.piccnet.com.cn:3128~");
+//        	logger.info("发送请求~测试环境~代理为proxy.piccnet.com.leetcode.editor.cn:3128~");
 //        	/*手动设置代理*/
-//        	HttpHost proxy = new HttpHost("proxy.piccnet.com.cn", 3128, "http");
+//        	HttpHost proxy = new HttpHost("proxy.piccnet.com.leetcode.editor.cn", 3128, "http");
 //        	/*手动设置代理*/
 //            requestConfig = RequestConfig.custom()/*这里是设置的代理-->*/.setProxy(proxy)/*<--这里是设置的代理*/.setConnectTimeout(CONNECT_TIMEOUT).setSocketTimeout(SOCKET_TIMEOUT).build();
 //		}else{

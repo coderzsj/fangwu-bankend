@@ -58,7 +58,7 @@
 //
 //			requestEntity.setContentEncoding("UTF-8");
 //			httpPost.addHeader("Content-type", "application/json");
-////			httpPost.addHeader("Host", "ops.picccdn.cn");
+////			httpPost.addHeader("Host", "ops.picccdn.leetcode.editor.cn");
 ////			httpPost.addHeader("Authorization", "a1s2d3f4");
 //
 ////			httpPost.setEntity(requestEntity);
@@ -98,7 +98,7 @@
 //        	CloseableHttpClient httpClient =HttpClients.createDefault();
 //
 //        	//设置代理
-////        	HttpHost proxy = new HttpHost("proxy.piccnet.com.cn", 3128, "http");
+////        	HttpHost proxy = new HttpHost("proxy.piccnet.com.leetcode.editor.cn", 3128, "http");
 //
 //            HttpGet httpGet = new HttpGet(url);
 //            RequestConfig requestConfig = RequestConfig.custom()/*.setProxy(proxy)*/.setConnectTimeout(30000).setConnectionRequestTimeout(30000).setSocketTimeout(30000).build();
