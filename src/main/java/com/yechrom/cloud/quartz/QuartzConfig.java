@@ -15,7 +15,7 @@ public class QuartzConfig {
      */
     @Bean
     public JobDetail getDataJob() {
-        return JobBuilder.newJob(GetDataJob.class).withIdentity("getDataTask").storeDurably().build();
+        return JobBuilder.newJob(DashboardJob.class).withIdentity("getDataTask").storeDurably().build();
     }
 
     /**
@@ -23,10 +23,9 @@ public class QuartzConfig {
      * @return
      */
     @Bean
-    public Trigger errorInterfaceTrigger() {
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/1 * * * ?");
+    public Trigger myTrigger() {
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0/59 * * * * ? ");
 //        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0 12 25 12 ? *");
-
         return TriggerBuilder.newTrigger().forJob(getDataJob()).withIdentity("getDataTask")
                 .withSchedule(scheduleBuilder).build();
     }

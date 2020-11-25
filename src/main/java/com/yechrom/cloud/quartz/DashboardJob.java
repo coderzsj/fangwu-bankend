@@ -8,19 +8,20 @@ import com.yechrom.cloud.dto.pojo.BuyHouse;
 import com.yechrom.cloud.dto.pojo.SellHouse;
 import com.yechrom.cloud.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
 import java.util.LongSummaryStatistics;
-import java.util.Map;
 
-@Component
+/**
+ * 定时任务
+ */
 @Slf4j
-public class GetData {
-
+public class DashboardJob extends QuartzJobBean {
     @Resource
     BuyHouseMapper buyHouseMapper;
 
@@ -30,9 +31,11 @@ public class GetData {
     @Autowired
     RedisUtil redis;
 
-    public void run() {
-        List<BuyHouse> buyHouses = buyHouseMapper.selectList(new QueryWrapper<BuyHouse>().eq("buy_statue", 2));
-        List<SellHouse> sellHouses = sellHouseMapper.selectList(new QueryWrapper<SellHouse>().eq("buy_statue", 2));
+    @Override
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+        log.info("~定时任务开始运行~");
+        List<BuyHouse>          buyHouses  = buyHouseMapper.selectList(new QueryWrapper<BuyHouse>().eq("buy_statue", 2));
+        List<SellHouse> sellHouses = sellHouseMapper.selectList(new QueryWrapper<SellHouse>().eq("sell_statue", 2));
         //获取总成交额度
         LongSummaryStatistics buyHouseStatistics  = buyHouses.stream().mapToLong(BuyHouse::getBuyPrice).summaryStatistics();
         LongSummaryStatistics sellHouseStatistics = sellHouses.stream().mapToLong(SellHouse::getSellPrice).summaryStatistics();
@@ -53,6 +56,5 @@ public class GetData {
         data.put("address", address);
         data.put("countMoney", countMoney);
         redis.set("house-control-system-data-dashboard", data.toJSONString());
-        log.info("~定时任务结束~ 结束报文为{}", data.toJSONString());
-    }
+        log.info("~定时任务结束~ 结束报文为{}", data.toJSONString());    }
 }
