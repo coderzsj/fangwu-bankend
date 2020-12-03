@@ -37,6 +37,7 @@ public class UserController {
      */
     @RequestMapping("/user/login")
     @ResponseBody
+    @ApiOperation("根据id获取用户信息")
     public ResponseBaseVo login(@RequestBody LoginVo loginVo) throws Exception {
         log.info("调用登录接口 , 传入的参数为 : {}" , loginVo.toString());
         String token = userService.login(loginVo);

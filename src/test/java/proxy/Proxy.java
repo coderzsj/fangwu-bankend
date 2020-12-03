@@ -6,13 +6,13 @@ package proxy;
  * @Author zsj
  */
 public class Proxy{
-    private SubjectImpl realSubject;
+    private SubjectImpl realsubject;
     public void Request() {
-        if (realSubject == null) {
-            realSubject = new SubjectImpl();
+        if (realsubject == null) {
+            realsubject = new SubjectImpl();
         }
         preRequest();
-        realSubject.Request();
+        realsubject.Request();
         postRequest();
     }
     public void preRequest() {

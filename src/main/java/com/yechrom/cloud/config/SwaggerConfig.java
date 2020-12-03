@@ -13,27 +13,21 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
-public class Swagger2Config {
-
-
+public class SwaggerConfig {
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
+                .pathMapping("/")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.test.MyDemo.api"))//填写扫描Api接口的包
+                .apis(RequestHandlerSelectors.basePackage("com.nvn.controller"))
                 .paths(PathSelectors.any())
-                .build();
-    }
-
-    private ApiInfo apiInfo(){
-        return new ApiInfoBuilder()
-                .title("swagger文档标题")
-                .description("swagger文档注释")
-                .termsOfServiceUrl("服务地址")
-                .contact(new Contact("作者", "其它文档url", "邮箱"))
-                .version("1.0")
-                .build();
-
+                .build().apiInfo(new ApiInfoBuilder()
+                        .title("SpringBoot整合Swagger")
+                        .description("SpringBoot整合Swagger，详细信息......")
+                        .version("9.0")
+                        .contact(new Contact("啊啊啊啊","blog.csdn.net","aaa@gmail.com"))
+                        .license("The Apache License")
+                        .licenseUrl("http://www.baidu.com")
+                        .build());
     }
 }
