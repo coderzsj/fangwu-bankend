@@ -18,7 +18,7 @@ public class MeController {
     @Autowired
     MeService meService;
 
-    @RequestMapping("test")
+    @PostMapping("test")
     public String m(){
         return "1";
     }

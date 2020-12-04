@@ -23,7 +23,6 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-@Api(tags = "用户管理相关接口")
 public class UserController {
 
     @Autowired
@@ -35,7 +34,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/user/login")
+    @PostMapping("/user/login")
     @ResponseBody
     @ApiOperation("根据id获取用户信息")
     public ResponseBaseVo login(@RequestBody LoginVo loginVo) throws Exception {
@@ -86,7 +85,7 @@ public class UserController {
      * 用户退出登录
      * @return
      */
-    @RequestMapping("/user/logout")
+    @PostMapping("/user/logout")
     @ResponseBody
     public ResponseBaseVo logout(@RequestParam(value = "token") String token) throws Exception {
         log.info("用户调用登出接口 , 传入的token参数为 {} " , token);

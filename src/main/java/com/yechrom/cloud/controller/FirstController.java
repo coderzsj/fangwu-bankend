@@ -24,14 +24,14 @@ public class FirstController {
     @Autowired
     UserService user;
 
-    @RequestMapping("/first")
+    @PostMapping("/first")
     public String test(){
         List<User> users = user.getUsers();
         for (User user : users) System.out.println(user.toString());
         return "ok";
     }
 
-    @RequestMapping("/info")
+    @PostMapping("/info")
     public String test1(@RequestBody Map map){
         System.out.println(map);
         HashMap<String , Object> name1 = (HashMap)map.get("userinfo");
@@ -43,7 +43,7 @@ public class FirstController {
         return null;
     }
 
-    @RequestMapping("/redistest")
+    @PostMapping("/redistest")
     public String test2(){
         redis.set("123123123" , "123213123");
         log.info(redis.get("123123123"));
